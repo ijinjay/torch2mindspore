@@ -1,0 +1,66 @@
+# [No.1] construct_wrapper.393 @ctx.addr=0x55cfbf915410
+# 
+funcgraph fg_393(
+        %para1 : Tensor(F32)[1, 1, 512, 512]    # x
+        , %para2 : Ref[Tensor(F32)][64, 3, 3, 3] = @null    # weight
+    ) {
+
+#------------------------> 0
+    %1 = FuncGraph::fg_394(%para1)    #(Tensor(F32)[1, 1, 512, 512])    # fg_394=construct.394 #scope: Default @ctx.addr=0x55cfbf8153f0
+      # 
+    Primitive::return(%1)    #(Undefined) #scope: Default
+      # 
+}
+
+
+# [No.2] construct.394 @ctx.addr=0x55cfbf8153f0
+#  In file /data/jay/.pyenv/versions/anaconda3-2019.03/envs/mindspore/lib/python3.7/site-packages/mindspore/nn/layer/conv.py(260)/    def construct(self, x):/
+funcgraph fg_394[fg_393](
+        %para3 : Tensor(F32)[1, 1, 512, 512]    # x
+    ) {
+    %1 : Bool = FuncGraph::fg_395(Bool(0))    #(Bool)    # fg_395=bool_.395 #scope: Default @ctx.addr=0x55cfbf83adc0
+      #  In file /data/jay/.pyenv/versions/anaconda3-2019.03/envs/mindspore/lib/python3.7/site-packages/mindspore/nn/layer/conv.py(262)/        if self.has_bias:/
+    %2 : Func = Primitive::switch(%1, FuncGraph::fg_396, FuncGraph::fg_397)    #(Bool, Func, Func)    # fg_396=✓construct.396, fg_397=✗construct.397 #scope: Default
+      #  In file /data/jay/.pyenv/versions/anaconda3-2019.03/envs/mindspore/lib/python3.7/site-packages/mindspore/nn/layer/conv.py(262)/        if self.has_bias:/
+
+#------------------------> 1
+    %3 = %2() #scope: Default @ctx.addr=0x55d041755c70
+      #  In file /data/jay/.pyenv/versions/anaconda3-2019.03/envs/mindspore/lib/python3.7/site-packages/mindspore/nn/layer/conv.py(262)/        if self.has_bias:/
+    Primitive::return(%3)    #(Undefined) #scope: Default
+      #  In file /data/jay/.pyenv/versions/anaconda3-2019.03/envs/mindspore/lib/python3.7/site-packages/mindspore/nn/layer/conv.py(262)/        if self.has_bias:/
+}
+
+
+# [No.3] ✗construct.397 @ctx.addr=0x55d041755c70
+#  In file /data/jay/.pyenv/versions/anaconda3-2019.03/envs/mindspore/lib/python3.7/site-packages/mindspore/nn/layer/conv.py(262)/        if self.has_bias:/
+funcgraph fg_397[fg_394](
+) {
+    %1 = DoSignaturePrimitive::S-Prim-Conv2D[pad_list=(I32(1), I32(1), I32(1), I32(1)), offset_a=I32(0), data_format="NCHW", group=I32(1), output_names=["output"], dilation=(I32(1), I32(1), I32(1), I32(1)), mode=I32(1), input_names=["x", "w"], kernel_size=(I32(3), I32(3)), out_channel=I32(64), pad_mode="pad", pad=(I32(1), I32(1), I32(1), I32(1)), stride=(I32(1), I32(1), I32(1), I32(1))](%para3, %para2)    #(Tensor(F32)[1, 1, 512, 512], Ref[Tensor(F32)][64, 3, 3, 3]) #scope: Default
+      #  In file /data/jay/.pyenv/versions/anaconda3-2019.03/envs/mindspore/lib/python3.7/site-packages/mindspore/nn/layer/conv.py(261)/        output = self.conv2d(x, self.weight)/
+
+#------------------------> 2
+    %2 = FuncGraph::fg_398(%1)    #(Undefined)    # fg_398=↓construct.398 #scope: Default
+      #  In file /data/jay/.pyenv/versions/anaconda3-2019.03/envs/mindspore/lib/python3.7/site-packages/mindspore/nn/layer/conv.py(262)/        if self.has_bias:/
+    Primitive::return(%2)    #(Undefined) #scope: Default
+      #  In file /data/jay/.pyenv/versions/anaconda3-2019.03/envs/mindspore/lib/python3.7/site-packages/mindspore/nn/layer/conv.py(262)/        if self.has_bias:/
+}
+
+
+#===============================================================================
+
+
+# [No.4] bool_.395 @ctx.addr=0x55cfbf83adc0
+#  In file /data/jay/.pyenv/versions/anaconda3-2019.03/envs/mindspore/lib/python3.7/site-packages/mindspore/_extends/parse/standard_method.py(141)/def bool_(x):/
+funcgraph fg_395(
+        %para4 : Bool    # x
+    ) {
+    %1 : Func = Primitive::getattr(%para4, "__bool__")    #(Bool, String) #scope: Default
+      #  In file /data/jay/.pyenv/versions/anaconda3-2019.03/envs/mindspore/lib/python3.7/site-packages/mindspore/_extends/parse/standard_method.py(143)/    return x.__bool__()/
+    %2 : Bool = %1() #scope: Default
+      #  In file /data/jay/.pyenv/versions/anaconda3-2019.03/envs/mindspore/lib/python3.7/site-packages/mindspore/_extends/parse/standard_method.py(143)/    return x.__bool__()/
+    Primitive::return(%2)    #(Bool) #scope: Default
+      #  In file /data/jay/.pyenv/versions/anaconda3-2019.03/envs/mindspore/lib/python3.7/site-packages/mindspore/_extends/parse/standard_method.py(143)/    return x.__bool__()/
+}
+
+
+# num of total function graphs: 4
