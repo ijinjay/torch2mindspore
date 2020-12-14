@@ -18,8 +18,17 @@ torch.nn.functional.pad
 torch.nn.ReLU
 ```
 
-## TODO
+## 版本支持
+受限于mindspore的研发进度，较多的算子mindspore未在NVIDIA GPU服务器上支持。目前测试的版本为mindspore 1.0.1 + CUDA 10.1版本。PyTorch版本为1.7.0.
 
+执行如下命令可以查看一些模型的测试
+
+```bash
+python test.py
+```
+
+## TODO
+添加更多算子支持
 
 
 
