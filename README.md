@@ -28,7 +28,8 @@ python test.py
 ```
 
 ## TODO
-添加更多算子支持
+1. 导出优化后的mindspore网络
+2. 添加更多算子支持
 
 
 
