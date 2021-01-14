@@ -65,7 +65,7 @@ def convert_size(ctx):
 
 class _MsGetDim(ms.nn.Cell):
     def __init__(self):
-        super(_MsGetSize, self).__init__()
+        super(_MsGetDim, self).__init__()
     def construct(self, x):
         return x.ndim
 

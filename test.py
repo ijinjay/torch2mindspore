@@ -10,7 +10,8 @@ from termcolor import colored
 from ms_converters import *
 
 from models.mwcnn_trt import MWCNN_trt as MWCNN
-from models.sr_hr_mwcnn import *
+# from models.sr_hr_mwcnn import *
+from models.sr_hrnet import *
 from argparse import ArgumentParser
 parser = ArgumentParser()
 parser.add_argument('--n_resblocks', type=int, default=16)
@@ -38,10 +39,11 @@ class Custom(torch.nn.Module):
         return r * 100
 
 
-@add_module_test(torch.float32, torch.device('cuda'), [(1, 1, 224, 224)], enabled=True)
+@add_module_test(torch.float32, torch.device('cuda'), [(1, 3, 224, 224)], enabled=True)
 def test_custom():
     # return MWCNN(args)
-    return get_sr_hrnet_model()
+    return get_sr_model()
+    # return get_sr_hrnet_model()
 
 
 def run(self):
