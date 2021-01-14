@@ -32,9 +32,9 @@ for method in TORCH_METHODS:
 
 
 # @mindspore_converter('torch.Tensor.size', is_real=False)
-@mindspore_converter('torch.Tensor.dim', is_real=False)
-def dont_warn(ctx):
-    pass
+# @mindspore_converter('torch.Tensor.dim', is_real=False)
+# def dont_warn(ctx):
+    # pass
 
 
 class _MsGetSize(ms.nn.Cell):
@@ -43,21 +43,45 @@ class _MsGetSize(ms.nn.Cell):
     def construct(self, x):
         return x.shape
 
-# @mindspore_converter('torch.Tensor.size', is_real=True)
-# def convert_size(ctx):
-    # input = ctx.method_args[0]
-    # output = ctx.method_return
-    # input_ms = add_missing_ms_tensors(ctx.network, [input])[0]
-    # input_ms_tensor = ctx.network.nodes[input_ms]
+@mindspore_converter('torch.Tensor.size', is_real=True)
+def convert_size(ctx):
+    input = ctx.method_args[0]
+    output = ctx.method_return
+    input_ms = add_missing_ms_tensors(ctx.network, [input])[0]
+    input_ms_tensor = ctx.network.nodes[input_ms]
 
-    # ms_cell = _MsGetSize()
-    # out = ms_cell(input_ms_tensor)
+    ms_cell = _MsGetSize()
+    out = ms_cell(input_ms_tensor)
 
-    # op_key = ctx.network.add_ops(ms_cell)
-    # out_ms = ctx.network.add_node(out)
+    op_key = ctx.network.add_ops(ms_cell)
+    out_ms = ctx.network.add_node(out)
 
+    # print("-----")
+    # print(type(output), type(out))
     # output._ms_tensor = out_ms
-    # ctx.network.add_pre(op_key, [input_ms])
-    # ctx.network.add_out(op_key, [out_ms])
+    ctx.network.add_pre(op_key, [input_ms])
+    ctx.network.add_out(op_key, [out_ms])
 
+
+class _MsGetDim(ms.nn.Cell):
+    def __init__(self):
+        super(_MsGetSize, self).__init__()
+    def construct(self, x):
+        return x.ndim
+
+@mindspore_converter('torch.Tensor.dim', is_real=True)
+def convert_dim(ctx):
+    input = ctx.method_args[0]
+    output = ctx.method_return
+    input_ms = add_missing_ms_tensors(ctx.network, [input])[0]
+    input_ms_tensor = ctx.network.nodes[input_ms]
+
+    ms_cell = _MsGetDim()
+    out = ms_cell(input_ms_tensor)
+
+    op_key = ctx.network.add_ops(ms_cell)
+    out_ms = ctx.network.add_node(out)
+
+    ctx.network.add_pre(op_key, [input_ms])
+    ctx.network.add_out(op_key, [out_ms])
 
