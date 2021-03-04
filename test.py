@@ -38,9 +38,11 @@ class Custom(torch.nn.Module):
         return r * 100
 
 
+# @add_module_test(torch.float32, torch.device('cuda'), [(1, 3, 224, 224)], enabled=True)
 @add_module_test(torch.float32, torch.device('cuda'), [(1, 1, 224, 224)], enabled=True)
 def test_custom():
     # return MWCNN(args)
+    # return get_sr_model()
     return get_sr_hrnet_model()
 
 
@@ -58,33 +60,33 @@ def run(self):
 
 
     # convert module
-    module_trt = torch2mindspore(module, inputs_conversion, max_workspace_size=1 << 20,  **self.torch2trt_kwargs)
+    module_ms = torch2mindspore(module, inputs_conversion, max_workspace_size=1 << 20,  **self.torch2ms_kwargs)
 
-    # create inputs for torch/trt.. copy of inputs to handle inplace ops
+    # create inputs for torch/ms.. copy of inputs to handle inplace ops
     inputs = ()
     for shape in self.input_shapes:
         inputs += (torch.randn(shape).to(self.device).type(self.dtype), )
-    inputs_trt = tuple([tensor.clone() for tensor in inputs])
+    inputs_ms = tuple([tensor.clone() for tensor in inputs])
 
 
     # test output against original
     outputs = module(*inputs)
-    outputs_trt = module_trt(*inputs_trt)
+    outputs_ms = module_ms(*inputs_ms)
 
     if not isinstance(outputs, tuple):
         outputs = (outputs, )
 
-    if not isinstance(outputs_trt, tuple):
-        outputs_trt = (outputs_trt, )
+    if not isinstance(outputs_ms, tuple):
+        outputs_ms = (outputs_ms, )
 
     # compute max error
     max_error = 0
     for i in range(len(outputs)):
         max_error_i = 0
         if outputs[i].dtype == torch.bool:
-            max_error_i = torch.sum(outputs[i] ^ outputs_trt[i])
+            max_error_i = torch.sum(outputs[i] ^ outputs_ms[i])
         else:
-            max_error_i = torch.max(torch.abs(outputs[i] - outputs_trt[i]))
+            max_error_i = torch.max(torch.abs(outputs[i] - outputs_ms[i]))
 
         if max_error_i > max_error:
             max_error = max_error_i
@@ -92,7 +94,7 @@ def run(self):
 
     if max_error > 1:
         print(outputs)
-        print(outputs_trt)
+        print(outputs_ms)
     # benchmark pytorch throughput
     torch.cuda.current_stream().synchronize()
     t0 = time.time()
@@ -107,11 +109,11 @@ def run(self):
     torch.cuda.current_stream().synchronize()
     t0 = time.time()
     for i in range(50):
-        outputs = module_trt(*inputs)
+        outputs = module_ms(*inputs)
     torch.cuda.current_stream().synchronize()
     t1 = time.time()
 
-    fps_trt = 50.0 / (t1 - t0)
+    fps_ms = 50.0 / (t1 - t0)
 
     # benchmark pytorch latency
     torch.cuda.current_stream().synchronize()
@@ -127,19 +129,19 @@ def run(self):
     torch.cuda.current_stream().synchronize()
     t0 = time.time()
     for i in range(50):
-        outputs = module_trt(*inputs)
+        outputs = module_ms(*inputs)
         torch.cuda.current_stream().synchronize()
     t1 = time.time()
 
-    ms_trt = 1000.0 * (t1 - t0) / 50.0
+    ms_ms = 1000.0 * (t1 - t0) / 50.0
 
     # jay test
     print('-------big size--------')
     x = [torch.rand((1, 1, 512, 512)).cuda().type(torch.float32)]
-    ms_y = module_trt(*x)
+    ms_y = module_ms(*x)
     print('-------end--------', ms_y.shape)
 
-    return max_error, fps, fps_trt, ms, ms_trt
+    return max_error, fps, fps_ms, ms, ms_ms
 
 
 if __name__ == '__main__':
@@ -149,10 +151,10 @@ if __name__ == '__main__':
         name = test.module_name()
         print(f' test name: {name}')
         # run(test)
-        max_error, fps, fps_trt, ms, ms_trt = run(test)
+        max_error, fps, fps_ms, ms, ms_ms = run(test)
 
         # write entry
-        line = '| %s | %s | %s | %s | %.2E | %.3g | %.3g | %.3g | %.3g |' % (name, test.dtype.__repr__().split('.')[-1], str(test.input_shapes), str(test.torch2trt_kwargs), max_error, fps, fps_trt, ms, ms_trt)
+        line = '| %s | %s | %s | %s | %.2E | %.3g | %.3g | %.3g | %.3g |' % (name, test.dtype.__repr__().split('.')[-1], str(test.input_shapes), str(test.torch2ms_kwargs), max_error, fps, fps_ms, ms, ms_ms)
 
         print(line)
 
