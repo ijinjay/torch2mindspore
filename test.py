@@ -10,7 +10,8 @@ from termcolor import colored
 from ms_converters import *
 
 from models.mwcnn_trt import MWCNN_trt as MWCNN
-from models.sr_hr_mwcnn import *
+# from models.sr_hr_mwcnn import *
+from models.sr_hrnet import *
 from argparse import ArgumentParser
 parser = ArgumentParser()
 parser.add_argument('--n_resblocks', type=int, default=16)
